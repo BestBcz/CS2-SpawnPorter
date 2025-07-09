@@ -1,0 +1,4 @@
+C:\Users\BCZ\IdeaProjects\SpawnPorter\obj\Debug\net8.0\SpawnPorter.csproj.AssemblyReference.cache
+C:\Users\BCZ\IdeaProjects\SpawnPorter\obj\Debug\net8.0\SpawnPorter.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\BCZ\IdeaProjects\SpawnPorter\obj\Debug\net8.0\SpawnPorter.csproj.CoreCompileInputs.cache
+C:\Users\BCZ\IdeaProjects\SpawnPorter\obj\Debug\net8.0\SpawnPorter.sourcelink.json

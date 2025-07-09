@@ -1,0 +1,11 @@
+{
+  "Cooldown": 2.0,
+  "MaxDistance": 100.0,
+  "EnableSound": true,
+  "TraceDistance": 200.0,
+  "DebugMode": false,
+  "AllowCrossTeam": false,
+  "PreserveAngles": true,
+  "ShowDistance": true,
+  "EnableEffects": true
+} 

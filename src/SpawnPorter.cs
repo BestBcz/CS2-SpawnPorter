@@ -25,11 +25,12 @@ public class SpawnPorter : BasePlugin
 
     public override void Load(bool hotReload)
     {
-        // 延迟加载出生点数据
-        Task.Delay(2000).ContinueWith(_ => LoadSpawnPoints());
-        
+        // 延迟2秒后在主线程执行加载出生点
+        AddTimer(2.0f, () => LoadSpawnPoints());
         // 启动定时器检测玩家按键
-        AddTimer(0.1f, CheckPlayerInput, true);
+        AddTimer(0.1f, CheckPlayerInput);
+        
+        Console.WriteLine("[SpawnPorter] 插件已加载，定时器已启动");
     }
 
     private void LoadSpawnPoints()
@@ -68,27 +69,73 @@ public class SpawnPorter : BasePlugin
 
     private void CheckPlayerInput()
     {
-        foreach (var player in Utilities.GetPlayers())
+        try
         {
-            if (player == null || !player.IsValid || !player.PawnIsAlive) continue;
-            if (player.Buttons.HasFlag(PlayerButtons.Use))
+            var players = Utilities.GetPlayers();
+            if (players == null || players.Count() == 0) return;
+            
+            foreach (var player in players)
             {
-                TryTeleport(player);
+                if (player == null || !player.IsValid || !player.PawnIsAlive) continue;
+                
+                // 检查玩家是否按下使用键
+                if (player.Buttons.HasFlag(PlayerButtons.Use))
+                {
+                    Console.WriteLine($"[SpawnPorter] 玩家 {player.PlayerName} 按下了使用键");
+                    TryTeleport(player);
+                }
             }
         }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[SpawnPorter] CheckPlayerInput 错误: {ex.Message}");
+        }
+        
+        // 递归调用实现重复定时器
+        AddTimer(0.1f, CheckPlayerInput);
     }
 
     private void TryTeleport(CCSPlayerController player)
     {
-        if (DateTime.Now < _playerCooldowns.GetValueOrDefault(player.SteamID, DateTime.MinValue))
-            return;
-        var nearest = FindNearestSpawn(player);
-        if (nearest == null) return;
-        float distance = (player.PlayerPawn.Value!.AbsOrigin - nearest.Position).Length();
-        if (distance > MaxDistance) return;
-        player.PlayerPawn.Value.Teleport(nearest.Position, nearest.Angles, new Vector(0, 0, 0));
-        _playerCooldowns[player.SteamID] = DateTime.Now.AddSeconds(CooldownSeconds);
-        player.PrintToChat("[SpawnPorter] 已传送到出生点");
+        try
+        {
+            if (DateTime.Now < _playerCooldowns.GetValueOrDefault(player.SteamID, DateTime.MinValue))
+            {
+                Console.WriteLine($"[SpawnPorter] 玩家 {player.PlayerName} 在冷却中");
+                return;
+            }
+            
+            var nearest = FindNearestSpawn(player);
+            if (nearest == null)
+            {
+                Console.WriteLine($"[SpawnPorter] 未找到最近的出生点");
+                return;
+            }
+            
+            if (player.PlayerPawn.Value == null)
+            {
+                Console.WriteLine($"[SpawnPorter] 玩家Pawn为空");
+                return;
+            }
+            
+            float distance = (player.PlayerPawn.Value.AbsOrigin - nearest.Position).Length();
+            Console.WriteLine($"[SpawnPorter] 距离最近出生点: {distance}");
+            
+            if (distance > MaxDistance)
+            {
+                Console.WriteLine($"[SpawnPorter] 距离太远，无法传送");
+                return;
+            }
+            
+            player.PlayerPawn.Value.Teleport(nearest.Position, nearest.Angles, new Vector(0, 0, 0));
+            _playerCooldowns[player.SteamID] = DateTime.Now.AddSeconds(CooldownSeconds);
+            player.PrintToChat("[SpawnPorter] 已传送到出生点");
+            Console.WriteLine($"[SpawnPorter] 玩家 {player.PlayerName} 已传送到出生点");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[SpawnPorter] TryTeleport 错误: {ex.Message}");
+        }
     }
 
     private SpawnPoint? FindNearestSpawn(CCSPlayerController player)
