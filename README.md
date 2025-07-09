@@ -1,4 +1,8 @@
 # CS2-SpawnPorter - CS2 出生点传送插件 | CS2 Spawn Teleport Plugin
+> [!IMPORTANT]
+> _当前版本需要在换图之后使用css_plugins reload SpawnPorter才有效_
+
+
 
 ## 插件简介 | Introduction
 CS2-SpawnPorter 是一款为 CS2 跑图模式设计的极简出生点传送插件，玩家可通过按 E 键快速回到最近的出生点。
