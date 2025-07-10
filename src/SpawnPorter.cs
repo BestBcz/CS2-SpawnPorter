@@ -29,8 +29,17 @@ public class SpawnPorter : BasePlugin
         AddTimer(2.0f, () => LoadSpawnPoints());
         // 启动定时器检测玩家按键
         AddTimer(0.1f, CheckPlayerInput);
-        
+        // 注册回合开始事件监听
+        RegisterEventHandler<EventRoundStart>(OnRoundStart);
         Console.WriteLine("[SpawnPorter] 插件已加载，定时器已启动");
+    }
+
+    private HookResult OnRoundStart(EventRoundStart @event, GameEventInfo info)
+    {
+        LoadSpawnPoints();
+        AddTimer(0.1f, CheckPlayerInput);
+        Console.WriteLine("[SpawnPorter] round_start 事件触发，已重新加载出生点并启动定时器");
+        return HookResult.Continue;
     }
 
     private void LoadSpawnPoints()
