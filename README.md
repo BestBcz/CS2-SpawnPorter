@@ -1,6 +1,4 @@
 # CS2-SpawnPorter - CS2 出生点传送插件 | CS2 Spawn Teleport Plugin
-> [!IMPORTANT]
-> _当前版本需要在换图之后使用css_plugins reload SpawnPorter才有效_
 
 
 
